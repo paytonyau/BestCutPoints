@@ -11,4 +11,4 @@ This program is open for everyone to edit and I am preparing to wrap the functio
 
 (2) `findcut`- use contingency tables (X^2) approach to make a decision on how many cutoff numbers are needed before it can be employed
 
-The source code was deposted on https://osf.io/ef7na/ by the authors and a step-by-step user manual for using the script can be found in the URLs below, http://www.math.nsysu.edu.tw/~cchang/cutoff/manual.doc or https://github.com/paytonyau/OptimalCutpoints/blob/master/manual.doc
+The source code was deposted on https://osf.io/ef7na/ by the authors and a step-by-step user manual for using the script can be found in the URLs below, https://github.com/paytonyau/BestSurvCutPoints/blob/main/User_Manual_mod.pdf
