@@ -1,4 +1,4 @@
-# BestCutPoints
+# BestSurvCutPoints
 Finding the optimal number and locations of cutpoints for survival analysis.
 
 The origional publication and the corresponding scripts were retrived based on Attribution 4.0 International (CC BY 4.0) from
