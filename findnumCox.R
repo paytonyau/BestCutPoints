@@ -190,6 +190,3 @@ obj <- function(xx){
   }
   return(beta1$loglik[2])
 }
-
-
-
