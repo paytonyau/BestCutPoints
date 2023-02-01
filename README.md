@@ -8,21 +8,21 @@ Finding the optimal numbers and locations of cutpoints for survival analysis is 
 
 **findcutnum (factor,outcome,datatype,nmin=20,segment=100)**
 
-**factor**: continuous risk factor for which to find the optimal cut-offs (Nx1 vector)
-**outcome**: a matrix of event and time
-**datatype**: specify "survival" for survival outcome or "binary" for binary outcome (string)
-**nmin**: minimum number of individuals in each group(positive integer, default=20)
-**segment**: total number of pieces(integer, default=100)
+- **factor**: continuous risk factor for which to find the optimal cut-offs (Nx1 vector)
+- **outcome**: a matrix of event and time
+- **datatype**: specify "survival" for survival outcome or "binary" for binary outcome (string)
+- **nmin**: minimum number of individuals in each group(positive integer, default=20)
+- **segment**: total number of pieces(integer, default=100)
 
 (A2) `findcut`- determines **the best location of cut-off points** for a continuous risk factor use contingency tables (X^2^) approach, and it can handle both survival and binary data. For **survival**, the recommended criteria to use are "likelihood ratio test" and "logrank test", while for **binary**, "AUC" and "Likelihood ratio test" are suggested
 
 **findcut(factor,outcome,cutnum,datatype,nmin,segment)**
 
-**factor**: continuous risk factor for which to find the optimal cut-offs (Nx1 vector)
-**cutnum**: number of cut-offs (positive integer)
-**datatype**: specify "survival" for survival outcome or "binary" for binary outcome (string)
-**nmin**: minimum number of individuals in each group(positive integer, default=20)
-**segment**: total number of pieces(integer, default=100)
+- **factor**: continuous risk factor for which to find the optimal cut-offs (Nx1 vector)
+- **cutnum**: number of cut-offs (positive integer)
+- **datatype**: specify "survival" for survival outcome or "binary" for binary outcome (string)
+- **nmin**: minimum number of individuals in each group(positive integer, default=20)
+- **segment**: total number of pieces(integer, default=100)
 
 ---------------------------------------
 
@@ -61,33 +61,33 @@ findcut(factor=invasion, outcome=LVSI, cutnum=2, datatype = "logistic", nmin=5, 
 
 **findnumCox(target,event,time,confound,totalcut=3,initial_rr=NULL,initial_cut=NULL,initial_domain=NULL,numgen=10,numcross=20,gap=NULL)**
 
-**target**: a continuous target variable to be categorized (an nx1 vector)
-**event**: failure indicator (1: event occurs; 0: right censored)
-**time**: observed time
-**confound**: an nxq data.frame including all the confounding covariates
-**totalcut**: maximum number of cutpoints (default is 3)
-**initial_rr**: initial values for relative risk (default is NULL)
-**initial_cut**: initial values for the locations of cutpoints (default is NULL)
-**initial_domain**: upper and lower bounds for cut points (default is NULL)
-**numgen**: maximum number of iterations for genetic algorithms
-**numcross**: number of cross-validations (default is NULL)
-**gap**: minimum gap between two consecutive cutpoints (default is 0.03)
+- **target**: a continuous target variable to be categorized (an nx1 vector)
+- **event**: failure indicator (1: event occurs; 0: right censored)
+- **time**: observed time
+- **confound**: an nxq data.frame including all the confounding covariates
+- **totalcut**: maximum number of cutpoints (default is 3)
+- **initial_rr**: initial values for relative risk (default is NULL)
+- **initial_cut**: initial values for the locations of cutpoints (default is NULL)
+- **initial_domain**: upper and lower bounds for cut points (default is NULL)
+- **numgen**: maximum number of iterations for genetic algorithms
+- **numcross**: number of cross-validations (default is NULL)
+- **gap**: minimum gap between two consecutive cutpoints (default is 0.03)
 
 (B2) `findcutCox` -  find the optimal **location** of cutpoints for a continuous variable
 
 **findcutCox(target,event,time,numbercross,numcut,initial_rr=NULL,initial_cut=NULL,initial_domain=NULL,numgen,gap=0.03)**
 
-**target**: A continuous variable to be categorized (an nx1 vector)
-**event**: Failure indicator (1: event occurs; 0: right censored)
-**time**: Observed time
-**confound**: An nxq data.frame including all confounding covariates
-**numcross**: Number of cross validation (ie B in the paper)
-**numcut**: Number of cutpoints
-**initial_rr**: Initial values for relative risk; Type: list; Default is NULL
-**initial_cut**: Initial values for the locations of cutpoints; Type: list; Default is NULL
-**initial_domain**: Upper and lower bounds for cut points; Type: a kx2 matrix; Default is NULL; each row of the matrix (a 1x2 vector) represents the lower and upper bound for one cut point.
-**numgen**: Maximum number of iterations for genetic algorithms
-**gap**: Minimum gap between two consecutive cutpoints, default is 0.03
+- **target**: A continuous variable to be categorized (an nx1 vector)
+- **event**: Failure indicator (1: event occurs; 0: right censored)
+- **time**: Observed time
+- **confound**: An nxq data.frame including all confounding covariates
+- **numcross**: Number of cross validation (ie B in the paper)
+- **numcut**: Number of cutpoints
+- **initial_rr**: Initial values for relative risk; Type: list; Default is NULL
+- **initial_cut**: Initial values for the locations of cutpoints; Type: list; Default is NULL
+- **initial_domain**: Upper and lower bounds for cut points; Type: a kx2 matrix; Default is NULL; each row of the matrix (a 1x2 vector) represents the lower and upper bound for one cut point.
+- **numgen**: Maximum number of iterations for genetic algorithms
+- **gap**: Minimum gap between two consecutive cutpoints, default is 0.03
 
 ---------------------------------------
 #### An example run using  `findnumCox` and  `findcutCox`
