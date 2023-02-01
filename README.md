@@ -1,10 +1,10 @@
 # BestSurvCutPoints
-### Finding the optimal numbers and locations of cutpoints for survival analysis
+### Finding the optimal number and locations of cutpoints for survival analysis
 
 Finding the optimal numbers and locations of cutpoints for survival analysis is a statistical technique used in medical research and other related fields to categorize a continuous variable into groups or intervals. The aim is to find the optimal number and location of cutpoints that provide the best discrimination between the risk of an event (such as death or disease) and non-occurrence of an event. The optimal number and location of cutpoints can be determined using various statistical methods, such as likelihood ratio tests, log-rank tests, or areas under the receiver operating characteristic (ROC) curve. To determine the optimal number of cutpoints, researchers can use methods such as the Akaike information criterion (AIC) or cross-validation. To determine the optimal location of cutpoints, researchers can use genetic algorithms or other optimization techniques. The optimal number and location of cutpoints can help researchers better understand the relationship between the continuous variable and the event of interest, leading to improved decision-making and clinical outcomes.
 
 ----------------------------
-(1) `findcutnum` - find **the optimal number of cut-off points** for a continuous risk factor. It minimizes the akaike information criterion (AIC) and handle both survival and binary outcome
+(A1) `findcutnum` - find **the optimal number of cut-off points** for a continuous risk factor. It minimizes the akaike information criterion (AIC) and handle both survival and binary outcome
 
 **findcutnum (factor,outcome,datatype,nmin=20,segment=100)**
 
@@ -14,7 +14,7 @@ Finding the optimal numbers and locations of cutpoints for survival analysis is 
 **nmin**: minimum number of individuals in each group(positive integer, default=20)
 **segment**: total number of pieces(integer, default=100)
 
-(2) `findcut`- determines **the best location of cut-off points** for a continuous risk factor use contingency tables (X^2^) approach, and it can handle both survival and binary data. For **survival**, the recommended criteria to use are "likelihood ratio test" and "logrank test", while for **binary**, "AUC" and "Likelihood ratio test" are suggested
+(A2) `findcut`- determines **the best location of cut-off points** for a continuous risk factor use contingency tables (X^2^) approach, and it can handle both survival and binary data. For **survival**, the recommended criteria to use are "likelihood ratio test" and "logrank test", while for **binary**, "AUC" and "Likelihood ratio test" are suggested
 
 **findcut(factor,outcome,cutnum,datatype,nmin,segment)**
 
@@ -43,40 +43,21 @@ invasion=c(1.1,0.1,1.0,0.8,1.2,1.0,0.3,1.0,0.4,0.6,0.4,0.8,1.0,1.0,1.1,0.5,0.9,1
 LVSI=c(0,0,0,1,0,1,0,0,1,1,0,1,1,1,0,0,0,1,1,1,1,0,1,0,0,0,0,1,0,1)
 ```
 
-###### (1) Survival data
+###### (1) Analyzing data from survival information 
 ```
-findcutnum(factor=BMI,
-        outcome=cbind(event,OS),
-        datatype="survival", 
-        nmin=5, 
-        segment=100)
+findcutnum(factor=BMI, outcome=cbind(event,OS), datatype="survival", nmin=5, segment=100)
 
-findcut(factor=BMI, 
-        outcome=cbind (event,OS), 
-        cutnum=2, 
-        datatype = "survival", 
-        nmin=5, 
-        segment=100)
+findcut(factor=BMI, outcome=cbind (event,OS), cutnum=2, datatype = "survival", nmin=5, segment=100)
 ```
-
-###### (2) Dichotomised data
+###### (2) Analyzing data from dichotomised data
 ```
-findcutnum(factor=invasion,
-           outcome=LVSI,
-        datatype="logistic",
-        nmin=5,
-        segment=100)
+findcutnum(factor=invasion, outcome=LVSI, datatype="logistic", nmin=5, segment=100)
 
-findcut(factor=invasion,
-        outcome=LVSI,
-        cutnum=2,
-        datatype = "logistic",
-        nmin=5,
-        segment=100)
+findcut(factor=invasion, outcome=LVSI, cutnum=2, datatype = "logistic", nmin=5, segment=100)
 ```
 
 -------------------------------------
-(1) `findcutnumCox` - find the optimal **number** of cutpoints
+(B1) `findcutnumCox` - find the optimal **number** of cutpoints
 
 **findnumCox(target,event,time,confound,totalcut=3,initial_rr=NULL,initial_cut=NULL,initial_domain=NULL,numgen=10,numcross=20,gap=NULL)**
 
@@ -92,10 +73,9 @@ findcut(factor=invasion,
 **numcross**: number of cross-validations (default is NULL)
 **gap**: minimum gap between two consecutive cutpoints (default is 0.03)
 
-(2) `findcutCox` -  find the optimal **location** of cutpoints for a continuous variable
+(B2) `findcutCox` -  find the optimal **location** of cutpoints for a continuous variable
 
 **findcutCox(target,event,time,numbercross,numcut,initial_rr=NULL,initial_cut=NULL,initial_domain=NULL,numgen,gap=0.03)**
-
 
 **target**: A continuous variable to be categorized (an nx1 vector)
 **event**: Failure indicator (1: event occurs; 0: right censored)
@@ -119,7 +99,7 @@ library("doParallel")
 library("doRNG")
 library("xtable")
 
-data=read.csv("toydata.csv")
+data=read.csv("toydata.csv") # in the Tuturial folder
 attach(data)
 set.seed(30)
 ptm <- proc.time()
@@ -135,9 +115,10 @@ result$aic #corrected AIC value
 which.min(result$aic) ## number of optimal cut points
 result$HR ## corrected hazard ratio (or corrected relative risk)
 #Cutpvalue # corrected p-value for each coefficient estimator (Note that for each cross validation, the p-value would be different)
+```
 
-
-######## confound example ##############
+###### confound example
+```
 set.seed(2019)
 target=data$BMI;event=data$Death;time=data$Death_surtime;confound=data$stage3
 userdata<-na.omit(data.frame(target,event,time,confound))
@@ -153,18 +134,18 @@ initial_domain <- list(matrix(c(12,35,0,5,0,5),
                        ncol = 2,byrow = TRUE))
 
 ## example for no initial values
-E <- findcutCox(BMI,Death,Death_surtime,stage3,numcut=3,
-                initial_rr=NULL,initial_cut=NULL,
-                initial_domain=NULL,numgen=15,gap=NULL)
+E <- findcutCox(BMI,Death,Death_surtime,stage3,numcut=3,initial_rr=NULL,
+                initial_cut=NULL,initial_domain=NULL,numgen=15,gap=NULL)
 E
 
 ## example for giving initial values
-G <- findcutCox(BMI,Death,Death_surtime,stage3,numcut=3,
-                initial_rr=initial_rr,initial_cut=initial_cut,
-                initial_domain=initial_domain,numgen=15,gap=NULL)
+G <- findcutCox(BMI, Death, Death_surtime, stage3, numcut=3, initial_rr=initial_rr,
+                initial_cut=initial_cut, initial_domain=initial_domain, numgen=15, gap=NULL)
 G
+```
 
-######## no_confound example #########
+###### non confound example
+```
 set.seed(2019)
 target=data$BMI;event=data$Death;time=data$Death_surtime
 userdata<-na.omit(data.frame(target,event,time))
@@ -183,15 +164,12 @@ H <- findcutCox(BMI,Death,Death_surtime,confound=NULL,numcut=2,
 H
 
 ## example for giving initial values
-I <- findcutCox(BMI,Death,Death_surtime,confound=NULL,numcut=2,
-                initial_rr=initial_rr,initial_cut=initial_cut,
-                initial_domain=initial_domain,numgen=15,gap=NULL)
+I <- findcutCox(BMI,Death, Death_surtime, confound=NULL, numcut=2, initial_rr=initial_rr,
+                initial_cut=initial_cut,initial_domain=initial_domain,numgen=15,gap=NULL)
 I
 ```
 
-The [original publication](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0176231), along with its associated scripts, were obtained through the Attribution 4.0 International (CC BY 4.0) license. Source code:  https://osf.io/ef7na/ and http://www.math.nsysu.edu.tw/~cchang/. The authors have deposited the and have provided a step-by-step [user manual (in pdf)](https://github.com/paytonyau/BestSurvCutPoints/blob/main/Tuturial/User_Manual_Fundcut.pdf) to assist users in using the script for `findcutnum` and  `findcut`.  To run the example for `findnumCox` and  `findcutCox`, the sample data deposited in [tutorial](https://github.com/paytonyau/BestSurvCutPoints/blob/main/Tuturial/).
+The [original publication](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0176231), along with its associated scripts (https://osf.io/ef7na/ and http://www.math.nsysu.edu.tw/~cchang/) , were obtained through the Attribution 4.0 International (CC BY 4.0) license. The authors  have provided a step-by-step [user manual (in pdf)](https://github.com/paytonyau/BestSurvCutPoints/blob/main/Tuturial/User_Manual_Fundcut.pdf) to assist users in using the script for `findcutnum` and  `findcut`.  The example to run for `findnumCox` and  `findcutCox` can be found in [the tutorial](https://github.com/paytonyau/BestSurvCutPoints/blob/main/Tuturial/).
 
-#####REFERENCE
+##### REFERENCE
 Chang, C., Hsieh, M. K., Chang, W. Y., Chiang, A. J., & Chen, J. (2017). Determining the optimal number and location of cutoff points with application to data of cervical cancer. PloS one, 12(4), e0176231.
-http://www.math.nsysu.edu.tw/~cchang/
-https://osf.io/ef7na/
