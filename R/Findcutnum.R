@@ -1,14 +1,37 @@
 #' findcutnum
 #'
-#' find the optimal number of cut-off points for a continuous risk factor
-#' @param findcutnum
-#' @return
+#' Find the optimal number of cut-off points for a continuous risk factor.
+#'
+#' @param factor The continuous risk factor to be analyzed.
+#' @param outcome The outcome data. For survival data, it should be a matrix with two columns: event and time. For logistic data, it should be a vector.
+#' @param datatype The type of data: "survival" for survival data or "logistic" for logistic data.
+#' @param nmin The minimum number of subjects in each group when finding cut-off points.
+#' @param segment The number of segments used to search for cut-off points within the data range.
+#'
+#' @return A list containing the minimum AIC values for different cut-off numbers.
+#'
 #' @examples
-#' ## Analyzing data from survival information
-#' findcutnum(factor=BMI, outcome=cbind(event,OS), datatype="survival", nmin=5, segment=100)
-#' ## Analyzing data from survival information
-#' findcutnum(factor=invasion, outcome=LVSI, datatype="logistic", nmin=5, segment=100)
+#' ## Analyzing survival data
+#' findcutnum(factor = BMI, outcome = cbind(event, OS), datatype = "survival", nmin = 5, segment = 100)
+#'
+#' ## Analyzing logistic data
+#' findcutnum(factor = invasion, outcome = LVSI, datatype = "logistic", nmin = 5, segment = 100)
+#'
 #' @export
+#'
+#' @references
+#' Reference citation goes here.
+#'
+#' @seealso
+#' See also \code{\link{cut}} and \code{\link{glm}}.
+#'
+#' @keywords
+#' cut points, optimal cut-offs, AIC, survival analysis, logistic regression
+#'
+#' @family findcut
+#'
+#' @rdname findcutnum
+#'
 
 # Function to find the optimal cut number for a given dataset
 findcutnum = function(factor, outcome, datatype, nmin = 20, segment = 100) {

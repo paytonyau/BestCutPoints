@@ -1,11 +1,49 @@
-#' findnumCox
+#' Find the optimal number of cutpoints
 #'
-#' find the optimal number of cutpoints
-#' @param findnumCox
-#' @return
+#' This function finds the optimal number of cutpoints for a survival analysis based on user-defined input.
+#'
+#' @param target A numeric vector containing the target variable (e.g., survival times).
+#' @param event A binary numeric vector indicating whether an event (e.g., death) occurred.
+#' @param time A numeric vector representing the time to the event.
+#' @param confound An optional data frame of confounding variables.
+#' @param numcross An integer specifying the number of cross-validations to perform.
+#' @param totalcut An integer specifying the total number of cuts to consider.
+#' @param initial_rr An optional numeric vector specifying initial relative risk values for each cutpoint.
+#' @param initial_cut An optional numeric vector specifying initial cutpoint values.
+#' @param initial_domain An optional list containing initial parameter domains.
+#' @param numgen An integer specifying the number of generations for the genetic algorithm.
+#' @param gap An optional numeric value specifying the gap between cutpoints.
+#'
+#' @return A list containing the following elements:
+#'   \item{aic}{A list of AIC values for different models with varying numbers of cutpoints.}
+#'   \item{HR}{A list of hazard ratios for different models with varying numbers of cutpoints.}
+#'   \item{Cutpvalue}{A list of cutpoint p-values for different models with varying numbers of cutpoints.}
+#'
 #' @examples
-#' findnumCox(BMI,Death,Death_surtime,confound = stage3,numcross=20,totalcut=3,initial_rr=NULL,initial_cut=NULL,initial_domain=NULL,numgen=10,gap=NULL)
+#' findnumCox(BMI, Death, Death_surtime, confound = stage3, numcross = 20, totalcut = 3)
+#'
 #' @export
+#'
+#' @import rgenoud
+#' @import survival
+#' @import foreach
+#' @import doParallel
+#' @import doRNG
+#' @import xtable
+#'
+#' @references Include any references or citations if applicable.
+#'
+#' @seealso Include any related functions or packages.
+#'
+#' @keywords survival analysis, genetic algorithm, AIC, hazard ratio, cutpoints
+#'
+#' @author Your Name
+#'
+#' @examples
+#' findnumCox(BMI, Death, Death_surtime, confound = stage3, numcross = 20, totalcut = 3)
+#'
+#' @export
+
 
 # Load necessary libraries
 findnumCox <- function(target, event, time, confound, numcross, totalcut = 3, initial_rr = NULL,

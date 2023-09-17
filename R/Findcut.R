@@ -1,12 +1,41 @@
 #' findcut
 #'
-#' determines the best location of cut-off points for a continuous risk factor use contingency tables (X^2) approach
-#' @param findcut
-#' @return
+#' Determines the best location of cut-off points for a continuous risk factor using contingency tables (X^2) approach.
+#'
+#' @param factor The continuous risk factor.
+#' @param outcome The outcome variable. For survival analysis, it should be a matrix with two columns: event and time.
+#'                For logistic regression, it should be a binary outcome vector.
+#' @param cutnum The number of cut-off points to find.
+#' @param datatype The type of analysis to perform, either "survival" or "logistic".
+#' @param nmin The minimum number of observations in each group after cutting.
+#' @param segment The number of segments to divide the continuous risk factor.
+#'
+#' @return A list of results depending on the analysis type:
+#'   - For "survival" analysis: A list containing various statistics related to cut-off point selection.
+#'   - For "logistic" analysis: A list containing various statistics related to cut-off point selection.
+#'
 #' @examples
-#' findcut(factor=BMI, outcome=cbind (event,OS), cutnum=2, datatype = "survival", nmin=5, segment=100)
-#' findcut(factor=invasion, outcome=LVSI, cutnum=2, datatype = "logistic", nmin=5, segment=100)
+#' findcut(factor = BMI, outcome = cbind(event, OS), cutnum = 2, datatype = "survival", nmin = 5, segment = 100)
+#' findcut(factor = invasion, outcome = LVSI, cutnum = 2, datatype = "logistic", nmin = 5, segment = 100)
+#'
 #' @export
+#'
+#' @seealso [Other functions or packages that are related to this one.]
+#'
+#' @references [Include any references or citations here.]
+#'
+#' @keywords [List keywords related to your function, e.g., "survival analysis," "logistic regression," etc.]
+#'
+#' @family [The package family, if applicable.]
+#'
+#' @note [Any additional notes or comments.]
+#'
+#' @author [Your name]
+#'
+#' @copyright [Copyright information, if applicable.]
+#'
+#' @license [License information, if applicable.]
+#'
 
 findcut= function(factor=NULL,outcome=NULL,cutnum=NA,datatype=c("survival","logistic"),nmin=20,segment=100)
 {
