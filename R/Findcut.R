@@ -22,15 +22,16 @@
 #'
 #' @seealso [Other functions or packages that are related to this one.]
 #'
-#' @references [Include any references or citations here.]
+#' @references
+#' Chang, C., Hsieh, M. K., Chang, W. Y., Chiang, A. J., & Chen, J. (2017). Determining the optimal number and location of cutoff points with application to data of cervical cancer. PloS one, 12(4), e0176231.
 #'
-#' @keywords [List keywords related to your function, e.g., "survival analysis," "logistic regression," etc.]
+#' @keywords survival analysis," "logistic regression
 #'
 #' @family [The package family, if applicable.]
 #'
 #' @note [Any additional notes or comments.]
 #'
-#' @author [Your name]
+#' @author Payton Yau (Package Development)
 #'
 #' @copyright [Copyright information, if applicable.]
 #'

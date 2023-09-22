@@ -20,13 +20,15 @@
 #' @export
 #'
 #' @references
-#' Reference citation goes here.
+#' Chang, C., Hsieh, M. K., Chang, W. Y., Chiang, A. J., & Chen, J. (2017). Determining the optimal number and location of cutoff points with application to data of cervical cancer. PloS one, 12(4), e0176231.
 #'
 #' @seealso
 #' See also \code{\link{cut}} and \code{\link{glm}}.
 #'
 #' @keywords
 #' cut points, optimal cut-offs, AIC, survival analysis, logistic regression
+#'
+#'#' @author Payton Yau (Package Development)
 #'
 #' @family findcut
 #'
@@ -268,7 +270,7 @@ cut3AIC=c()
 			end3=userdata$factor[n-nmin]
 	while(start1<end1)
 			  {
-				group1=sum(userdata$factor<=start1) #nummber of group1
+				group1=sum(userdata$factor<=start1) #number of group1
 
    			while(start2<end2)
      			  {
@@ -308,7 +310,7 @@ cut4AIC=c()
 			end4=userdata$factor[n-nmin]
 	while(start1<end1)
 			  {
-				group1=sum(userdata$factor<=start1) #nummber of group1
+				group1=sum(userdata$factor<=start1) #number of group1
 
    			while(start2<end2)
      			  {

@@ -43,9 +43,11 @@
 #' @import rgenoud survival foreach doParallel doRNG xtable
 #'
 #' @references
-#' Provide relevant references if available.
+#' Chang, C., Hsieh, M. K., Chang, W. Y., Chiang, A. J., & Chen, J. (2017). Determining the optimal number and location of cutoff points with application to data of cervical cancer. PloS one, 12(4), e0176231.
 #'
 #' @keywords cox-regression survival-analysis optimization
+#'
+#' @author Payton Yau (Package Development)
 #'
 #' @family Cox Regression
 #'

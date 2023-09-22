@@ -31,13 +31,14 @@
 #' @import doRNG
 #' @import xtable
 #'
-#' @references Include any references or citations if applicable.
+#' @references
+#' Chang, C., Hsieh, M. K., Chang, W. Y., Chiang, A. J., & Chen, J. (2017). Determining the optimal number and location of cutoff points with application to data of cervical cancer. PloS one, 12(4), e0176231.
 #'
 #' @seealso Include any related functions or packages.
 #'
 #' @keywords survival analysis, genetic algorithm, AIC, hazard ratio, cutpoints
 #'
-#' @author Your Name
+#' @author Payton Yau (Package Development)
 #'
 #' @examples
 #' findnumCox(BMI, Death, Death_surtime, confound = stage3, numcross = 20, totalcut = 3)
