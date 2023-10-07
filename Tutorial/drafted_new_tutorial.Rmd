@@ -1,0 +1,416 @@
+---
+title: "BestSurvCutPoints"
+output: html_document
+date: "2023-09-18"
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+## Introduction
+
+This document provides an overview of the `BestSurvCutPoints` R package
+for survival analysis. It explains the package's functionality,
+demonstrates its usage with examples, and offers insights into
+interpreting the results.
+
+## Package Description
+
+The `BestSurvCutPoints` package is designed to help researchers and data
+analysts find optimal cutpoints in survival analysis. It utilizes
+various functions, such as `findcutnum`, `findcut`, `findnumCox`, and
+`findcutCox`, to assist in categorizing continuous variables into
+intervals for improved survival data analysis.
+
+It involves categorizing a continuous variable into intervals to best
+distinguish event occurrence (e.g., death or disease) from
+non-occurrence. This package utilises AIC or cross-validation to find
+the ideal number of cutpoints, and genetic algorithms for their precise
+locations and help researchers and data analysts determine the most
+suitable cutpoints for survival data analysis.
+
+Why is finding optimal cutpoints important in survival analysis? How can
+it benefit researchers and data analysts? Providing answers to these
+questions can make your document more informative.
+
+# Installation
+
+To use the `BestSurvCutPoints` package, you can install it from GitHub
+using the following code:
+
+```{r setup, warning=FALSE, message=FALSE}
+# Install the package
+# devtools::install_github("paytonyau/BestSurvCutPoints")
+library(BestSurvCutPoints)
+```
+
+Loading Libraries In addition to BestSurvCutPoints, several other
+libraries are required for comprehensive survival analysis. These
+include survival, KMsurv, xtable, splines, pROC, and aod. Each library
+serves a specific purpose in the analysis.
+
+```{r library, warning=FALSE, message=FALSE}
+# Load the necessary libraries
+library("survival")   # Survival analysis library
+library("KMsurv")     # Kaplan-Meier survival curves
+library("xtable")     # Table generation for reports
+library("splines")    # Basis splines for modeling
+library("pROC")       # Receiver Operating Characteristic (ROC) analysis
+library("aod")        # Analysis of Overdispersed Data
+```
+
+Example 1: Survival Data This section demonstrates the use of the
+BestSurvCutPoints package with an example dataset related to survival
+analysis.
+
+### Data Description
+
+#### Survival data example 1
+
++--------------+----------------------------------------------------+
+| Column       | Explanation                                        |
++==============+====================================================+
+| BMI          | body mass index                                    |
++--------------+----------------------------------------------------+
+| event        | censoring status\                                  |
+|              | 0=censored\                                        |
+|              | 1=dead                                             |
++--------------+----------------------------------------------------+
+| OS           | time of observation in months\                     |
+|              | (minimum of event time and right censoring time)   |
++--------------+----------------------------------------------------+
+| invasion     | depth of tumour invasion into stroma               |
++--------------+----------------------------------------------------+
+| LVSI         | lymphovascular space invasion\                     |
+|              | 0 = not seen\                                      |
+|              | 1 = present                                        |
++--------------+----------------------------------------------------+
+
+```{r Example 1, warning=FALSE, message=FALSE}
+BMI = c(30,16,29,29,21,29,27,24,17,27,22,27,26,16,21,
+        21,23,20,25,23,28,20,22,22,37,23,25,34,31,26)
+
+event = c(1,1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,1,1,0)
+
+OS = c(138,92,64,15,62,235,214,197,41,33,257,115,123,44,154,
+       71,61,182,75,214,25,217,113,200,175,117,166,0,57,186)
+
+invasion = c(1.1,0.1,1.0,0.8,1.2,1.0,0.3,1.0,0.4,0.6,0.4,0.8,1.0,1.0,1.1,
+             0.5,0.9,1.0,0.6,0.1,1.1,0.4,0.4,1.1,1.1,0.4,1.1,1.2,0.9,0.8)
+
+LVSI = c(0,0,0,1,0,1,0,0,1,1,0,1,1,1,0,0,0,1,1,1,1,0,1,0,0,0,0,1,0,1)
+
+# Create a matrix
+dat1 = as.data.frame(cbind(BMI, event, OS, invasion, LVSI))
+
+rm(BMI, event, OS, invasion, LVSI)
+```
+
+#### Survival data example 2 (Lung data from survival package)
+
++--------------+-----------------------------------------------------+
+| Column       | Explanation                                         |
++==============+=====================================================+
+| inst         | Institution code                                    |
++--------------+-----------------------------------------------------+
+| time         | Survival time in days                               |
++--------------+-----------------------------------------------------+
+| status       | censoring status\                                   |
+|              | 1=censored\                                         |
+|              | 2=dead                                              |
++--------------+-----------------------------------------------------+
+| age          | Age in years                                        |
++--------------+-----------------------------------------------------+
+| sex          | 1 = Male\                                           |
+|              | 2 = Female                                          |
++--------------+-----------------------------------------------------+
+| ph.ecog      | ECOG performance score as rated by the physician\   |
+|              | 0=asymptomatic\                                     |
+|              | 1 = symptomatic but completely ambulatory\          |
+|              | 2 = in bed \<50% of the day\                        |
+|              | 3 = in bed \> 50% of the day but not bedbound\      |
+|              | 4 = bedbound                                        |
++--------------+-----------------------------------------------------+
+| ph.karno     | Karnofsky performance score rated by physician\     |
+|              | 0 = bad\                                            |
+|              | 100 = good                                          |
++--------------+-----------------------------------------------------+
+| pat.karno    | Karnofsky performance score as rated by patient\    |
+|              | 0 = bad\                                            |
+|              | 100 = good                                          |
++--------------+-----------------------------------------------------+
+| meal.cal     | Calories consumed at meals                          |
++--------------+-----------------------------------------------------+
+| wt.loss      | Weight loss in last six months                      |
++--------------+-----------------------------------------------------+
+
+```{r Example 2, warning=FALSE, message=FALSE}
+# The example data the survival package - from Example 2
+
+dat2 = lung
+
+# remove NA data to simpl
+dat2 <- na.omit(dat2)  
+
+# Recode the 'status' column
+dat2$status <- ifelse(dat2$status == 1, 0, 1)
+
+# ph.ecog to ph.ecog2
+dat2$ph.ecog2 <- as.numeric(ifelse(dat2$ph.ecog %in% c(0, 1), 0, 
+                                  ifelse(dat2$ph.ecog %in% 2:5, 1, NA)))
+
+# ph.karno + pat.karno / 2
+dat2$avg_karno <- (dat2$ph.karno + dat2$pat.karno) / 2
+```
+
+## findcutnum
+
+### Function to find optimal cutpoints based on BMI for survival analysis
+
+##### Example data 1
+```{r findcutnum 1, warning=FALSE, message=FALSE}
+findcutnum(
+  factor = dat1$BMI,            # Predictor variable
+  outcome = cbind(dat1$event, 
+                  dat1$OS),     # Survival outcome data
+  datatype = "survival",        # Data type for analysis
+  nmin = 5,                     # Minimum group size
+  segment = 100)                # Number of segments)
+```
+
+##### Example data 2
+```{r findcutnum 2, warning=FALSE, message=FALSE}
+findcutnum(factor = dat2$meal.cal, 
+           outcome = cbind(dat2$status, 
+                           dat2$time),
+           datatype = "survival", 
+           nmin = 5, 
+           segment = 50)
+```
+
+### Function to find optimal cutpoints based on invasion for logistic regression analysis
+##### Example 1
+```{r findcutnum 1, warning=FALSE, message=FALSE}
+findcutnum(
+  factor = dat1$invasion,  # Predictor variable (invasion)
+  outcome = dat1$LVSI,     # Outcome variable (LVSI)
+  datatype = "logistic",   # Data type for logistic regression
+  nmin = 5,                # Minimum group size
+  segment = 100)           # Number of segments
+```
+##### Example 2
+```{r findcutnum 2, warning=FALSE, message=FALSE}
+findcutnum(
+  factor = dat2$avg_karno,  # Predictor variable (ph.karno + pat.karno / 2)
+  outcome = dat2$ph.ecog2,  # Outcome variable (ph.ecog2)
+  datatype = "logistic",    # Data type for logistic regression
+  nmin = 5,                 # Minimum group size
+  segment = 25)            # Number of segments
+```
+
+## findcut
+
+### Function to find optimal cutpoints based on BMI for survival analysis with 2 cutpoints
+
+##### Example 1
+```{r findcut_1, warning=FALSE, message=FALSE}
+findcut(
+  factor = dat1$BMI,                   # Predictor variable
+  outcome = cbind(dat1$event, dat1$OS), # Survival outcome data
+  cutnum = 2,                         # Number of cutpoints
+  datatype = "survival",              # Data type for analysis
+  nmin = 5,                           # Minimum group size
+  segment = 100)                      # Number of segments
+```
+
+##### Example 2
+```{r findcut_2, warning=FALSE, message=FALSE}
+findcut(
+  factor = dat2$meal.cal,                    # Predictor variable 
+  outcome = cbind(dat2$status, dat2$time),   # Survival outcome data
+  cutnum = 2,                                # Number of cutpoints
+  datatype = "survival",                     # Data type for analysis
+  nmin = 2,                                  # Minimum group size
+  segment = 25)                             # Number of segments
+```
+
+### Function to find optimal cutpoints based on invasion for logistic regression analysis with 2 cutpoints
+
+##### Example 1 
+```{r findcut 1, warning=FALSE, message=FALSE}
+findcut(
+  factor = dat1$invasion,   # Predictor variable (invasion)
+  outcome = dat1$LVSI,      # Outcome variable (LVSI)
+  cutnum = 3,              # Number of cutpoints
+  datatype = "logistic",   # Data type for logistic regression
+  nmin = 5,                # Minimum group size
+  segment = 100            # Number of segments
+)
+```
+
+##### Example 2 
+
+Error message appeared: `Error in qr.solve(L %*% V %*% t(L)) : singular matrix 'a' in solve`
+meaning that the cutnum of the assigned number does not allow you to continue the run. Try lower the number of the `cutsum` argument
+```{r findcut 2, warning=FALSE, message=FALSE}
+findcut(
+  factor = dat2$avg_karno,  # Predictor variable (ph.karno + pat.karno / 2)
+  outcome = dat2$ph.ecog2,  # Outcome variable (ph.ecog2)
+  cutnum = 2,              # Number of cutpoints  
+  datatype = "logistic",    # Data type for logistic regression
+  nmin = 5,                 # Minimum group size
+  segment = 10)            # Number of segments
+```
+
+### The `findnumCox` finds the optimal number of cutpoints for survival analysis
+
+```{r findcut, warning=FALSE, message=FALSE}
+# Load your dataset from a CSV file (toydata.csv should be in the current working directory)
+data <- read.csv("toydata.csv")
+
+# Attach the data for easy access to columns
+attach(data)
+
+# Set a random seed for reproducibility
+set.seed(30)
+
+# Record the starting time
+ptm <- proc.time()
+
+# Call the findnumCox function to find optimal cutpoints
+
+result <- findnumCox(
+  target = BMI,             # Predictor variable (BMI)
+  event = Death,            # Event indicator variable (Death)
+  time = Death_surtime,     # Survival time variable (Death_surtime)
+  confound = stage3,        # Confounding variable (stage3)
+  totalcut = 3,             # Total number of cutpoints to consider
+  initial_rr = NULL,        # Initial relative risk values (set to NULL)
+  initial_cut = NULL,       # Initial cutpoint values (set to NULL)
+  initial_domain = NULL,    # Initial domain values (set to NULL)  
+  numgen = 10,              # Number of generations for genetic algorithm
+  numcross = 20,            # Number of cross-validations
+  gap = NULL                # Gap value (set to NULL)
+)
+
+# Calculate the time taken for the analysis
+proc.time() - ptm
+
+detach(data)
+# Print the corrected AIC values
+result$aic
+
+# Find the number of optimal cutpoints (the index with the minimum AIC)
+which.min(result$aic)
+
+# Print the corrected hazard ratios (or relative risks)
+result$HR
+
+# Note: Corrected p-values for each coefficient estimator (Cutpvalue) are available in the result but are not printed here.
+```
+
+```{r findnumCox, warning=FALSE, message=FALSE}
+# Attach the data for easy access to columns
+attach(dat1)
+
+# Set a random seed for reproducibility
+set.seed(30)
+
+# Record the starting time
+ptm <- proc.time()
+
+# Call the findnumCox function to find optimal cutpoints
+
+result <- findnumCox(
+  target = BMI,             # Predictor variable (BMI)
+  event = event,            # Event indicator variable (Death)
+  time = OS,                # Survival time variable (Death_surtime)
+  confound = LVSI,          # Confounding variable (stage3)
+  totalcut = 2,             # Total number of cutpoints to consider
+  initial_rr = NULL,        # Initial relative risk values (set to NULL)
+  initial_cut = NULL,       # Initial cutpoint values (set to NULL)
+  initial_domain = NULL,    # Initial domain values (set to NULL)  
+  numgen = 10,              # Number of generations for genetic algorithm
+  numcross = 20,            # Number of cross-validations
+  gap = NULL                # Gap value (set to NULL)
+)
+
+# Calculate the time taken for the analysis
+proc.time() - ptm
+
+detach(dat1)
+# Print the corrected AIC values
+result$aic
+
+# Find the number of optimal cutpoints (the index with the minimum AIC)
+which.min(result$aic)
+
+# Print the corrected hazard ratios (or relative risks)
+result$HR
+
+# Note: Corrected p-values for each coefficient estimator (Cutpvalue) are available in the result but are not printed here.
+```
+
+
+
+```{r findnumCox, warning=FALSE, message=FALSE}
+attach(dat2)
+
+result <- findnumCox(
+  target = avg_karno,       # Predictor variable (BMI)
+  event = status,           # Event indicator variable (Death)
+  time = time,              # Survival time variable (Death_surtime)
+  confound = ph.ecog2,      # Confounding variable (stage3)
+  totalcut = 2,             # Total number of cutpoints to consider
+  initial_rr = NULL,        # Initial relative risk values (set to NULL)
+  initial_cut = NULL,       # Initial cutpoint values (set to NULL)
+  initial_domain = NULL,    # Initial domain values (set to NULL)  
+  numgen = 10,              # Number of generations for genetic algorithm
+  numcross = 20,            # Number of cross-validations
+  gap = NULL                # Gap value (set to NULL)
+)
+```
+
+#### 
+##### confound example
+```{r findcutCox, warning=FALSE, message=FALSE}
+# Set a random seed for reproducibility
+set.seed(2019)
+
+# Extract data from your dataset
+target <- data$BMI
+event <- data$Death
+time <- data$Death_surtime
+confound <- data$stage3
+
+# Create user data based on input and handle missing values
+userdata <- na.omit(data.frame(target, event, time, confound))
+
+# Determine the number of observations
+N <- dim(userdata)[1]
+
+# Generate random bootstrap samples
+numboot <- sample(N)
+
+# Define initial values for relative risks, cutpoints, and domains
+initial_rr <- list(c(3, 2), c(3, 6, 2), c(3, 4, 5, 2))
+initial_cut <- list(c(19), c(19, 30), c(15, 25, 30))
+initial_domain <- list(
+  matrix(c(12, 35, 0, 5, 0, 5), ncol = 2, byrow = TRUE),
+  matrix(c(15, 35, 15, 35, 0, 5, 0, 5, 0, 5), ncol = 2, byrow = TRUE),
+  matrix(c(15, 35, 15, 35, 15, 35, 0, 5, 0, 5, 0, 5, 0, 5), ncol = 2, byrow = TRUE)
+)
+
+# Example for no initial values provided
+E <- findcutCox(BMI, Death, Death_surtime, stage3, numcut = 3, initial_rr = NULL,
+                initial_cut = NULL, initial_domain = NULL, numgen = 15, gap = NULL)
+
+# Print the result
+E
+
+# Example for providing initial values
+G <- findcutCox(BMI, Death, Death_surtime, stage3, numcut = 3, initial_rr = initial_rr,
+                initial_cut = initial_cut, initial_domain = initial_domain, numgen = 15, gap = NULL)
+
+# Print the result
+G

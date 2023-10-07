@@ -1,9 +1,9 @@
 
-# BestSurvCutPoints
+# BestSurvCuts
 
 ### Finding the optimal number and locations of cutpoints for survival analysis
 
-BestSurvCutPoints is an R package that provides functions for finding optimal cutpoints in survival analysis. It includes four core functions: `findcutnum`, `findcut`, `findnumCox`, and `findcutCox`. It involves categorizing a continuous variable into intervals to best distinguish event occurrence (e.g., death or disease) from non-occurrence. This package utilises AIC or cross-validation to find the ideal number of cutpoints, and genetic algorithms for their precise locations and help researchers and data analysts determine the most suitable cutpoints for survival data analysis.
+BestSurvivalCuts is an R package that provides functions for finding optimal cutpoints in survival analysis. It includes four core functions: `findcutnum`, `findcut`, `findnumCox`, and `findcutCox`. It involves categorizing a continuous variable into intervals to best distinguish event occurrence (e.g., death or disease) from non-occurrence. This package utilises AIC or cross-validation to find the ideal number of cutpoints, and genetic algorithms for their precise locations and help researchers and data analysts determine the most suitable cutpoints for survival data analysis.
 
 ## Table of Contents
 
@@ -18,13 +18,13 @@ BestSurvCutPoints is an R package that provides functions for finding optimal cu
 
 you can install it from GitHub using the `devtools` package:
 
-`devtools::install_github("paytonyau/BestSurvCutPoints")` 
+`devtools::install_github("paytonyau/BestSurvivalCuts")` 
 
 ## Usage
 
-To use the BestSurvCutPoints package, load it using the `library` function:
+To use the BestSurvivalCuts package, load it using the `library` function:
 
-`library(BestSurvCutPoints)` 
+`library(BestSurvivalCuts)` 
 
 Once loaded, you can use the following core functions:
 
@@ -325,8 +325,8 @@ I
 ```
 
 
-The [original publication](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0176231), along with its associated scripts (https://osf.io/ef7na/ and http://www.math.nsysu.edu.tw/~cchang/) , were obtained through the Attribution 4.0 International (CC BY 4.0) license. The authors  have provided a step-by-step [user manual (in pdf)](https://github.com/paytonyau/BestSurvCutPoints/blob/main/Tuturial/User_Manual_Fundcut.pdf) to assist users in using the script for `findcutnum` and  `findcut`.  
-The example to run for `findnumCox` and  `findcutCox` can be found in [the tutorial](https://github.com/paytonyau/BestSurvCutPoints/blob/main/Tuturial/).
+The [original publication](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0176231), along with its associated scripts (https://osf.io/ef7na/ and http://www.math.nsysu.edu.tw/~cchang/) , were obtained through the Attribution 4.0 International (CC BY 4.0) license. The authors  have provided a step-by-step [user manual (in pdf)](https://github.com/paytonyau/BestSurvivalCuts/blob/main/Tuturial/User_Manual_Fundcut.pdf) to assist users in using the script for `findcutnum` and  `findcut`.  
+The example to run for `findnumCox` and  `findcutCox` can be found in [the tutorial](https://github.com/paytonyau/BestSurvivalCuts/blob/main/Tuturial/).
 
 ## References
 Chang, C., Hsieh, M. K., Chang, W. Y., Chiang, A. J., & Chen, J. (2017). Determining the optimal number and location of cutoff points with application to data of cervical cancer. PloS one, 12(4), e0176231.

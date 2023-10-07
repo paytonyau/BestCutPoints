@@ -1,0 +1,270 @@
+---
+title: "BestSurvivalCuts"
+author: "Payton Yau"
+date: "2023-09-18"
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
+  html_document:
+    toc: yes
+    toc_depth: 2
+    number_sections: yes
+abstract: This document provides an overview of the BestSurvivalCuts package.
+keywords:
+- R
+- BestSurvivalCuts
+- survival analysis
+bibliography: bibliography.bib
+csl: apa.csl
+subtitle: An Introduction to BestSurvivalCuts
+editor_options:
+  markdown:
+    wrap: 72
+---
+
+This document serves as a comprehensive guide to the `BestSurvivalCuts`
+R package, a tool designed for survival analysis. It elucidates the
+functionalities of the package, provides practical examples of its
+application, and offers guidance on how to interpret the results
+effectively.
+
+### Package Description
+
+The `BestSurvivalCuts` package aids in finding optimal cutpoints in
+survival analysis. It uses functions like `findcutnum`, `findcut`,
+`findnumCox`, and `findcutCox` to categorize continuous variables into
+intervals.
+
+This package using AIC or cross-validation, determines the ideal number
+of cutpoints and employs genetic algorithms for their precise locations.
+These cutpoints are instrumental in identifying significant thresholds
+in predictors, which can indicate different risk levels or stages of a
+disease. Not only do they aid in classifying patients into groups for
+personalized care, but they also find application in plant science. They
+can help pinpoint crucial thresholds in plant growth, disease
+resistance, or other essential traits, thereby facilitating a more
+nuanced understanding and care of different plant species.
+
+### Installation
+
+To use the `BestSurvivalCuts` package, you can install it from GitHub
+using the following code:
+
+```{r setup, warning=FALSE, message=FALSE}
+# Install the package
+# devtools::install_github("paytonyau/BestSurvivalCuts")
+library("BestSurvivalCuts")
+```
+
+Loading Libraries required for `BestSurvivalCuts`, these include
+`survival`, `KMsurv`, `xtable`, `splines`, `pROC`, and `aod`.
+
+```{r library, warning=FALSE, message=FALSE}
+# Load the necessary libraries
+library("survival")   # Survival analysis library
+library("KMsurv")     # Kaplan-Meier survival curves
+library("xtable")     # Table generation for reports
+library("splines")    # Basis splines for modeling
+library("pROC")       # Receiver Operating Characteristic (ROC) analysis
+library("aod")        # Analysis of Overdispersed Data
+```
+
+### Survival data
+
+To illustrate how to use the package, the following data contained
+information of 30 individuals:
+
+```{r Example 1, warning=FALSE, message=FALSE}
+BMI = c(30,16,29,29,21,29,27,24,17,27,22,27,26,16,21,
+        21,23,20,25,23,28,20,22,22,37,23,25,34,31,26)
+
+event = c(1,1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,1,0,0,1,1,0)
+
+OS = c(138,92,64,15,62,235,214,197,41,33,257,115,123,44,154,
+       71,61,182,75,214,25,217,113,200,175,117,166,0,57,186)
+
+invasion = c(1.1,0.1,1.0,0.8,1.2,1.0,0.3,1.0,0.4,0.6,0.4,0.8,1.0,1.0,1.1,
+             0.5,0.9,1.0,0.6,0.1,1.1,0.4,0.4,1.1,1.1,0.4,1.1,1.2,0.9,0.8)
+
+LVSI = c(0,0,0,1,0,1,0,0,1,1,0,1,1,1,0,0,0,1,1,1,1,0,1,0,0,0,0,1,0,1)
+
+# Create a matrix
+dat1 = as.data.frame(cbind(BMI, event, OS, invasion, LVSI))
+
+rm(BMI, event, OS, invasion, LVSI)
+```
+
++---------------+------------------------------------------+
+| Column        | Explanation                              |
++===============+==========================================+
+| BMI           | body mass index                          |
++---------------+------------------------------------------+
+| event         | censoring status\                        |
+|               | 0=censored\                              |
+|               | 1=dead                                   |
++---------------+------------------------------------------+
+| OS            | time of observation in months\           |
+|               | (minimum of event time and right         |
+|               | censoring time)                          |
++---------------+------------------------------------------+
+| invasion      | depth of tumour invasion into stroma     |
++---------------+------------------------------------------+
+| LVSI          | lymphovascular space invasion\           |
+|               | 0 = not seen\                            |
+|               | 1 = present                              |
++---------------+------------------------------------------+
+
+### findcutnum
+
+#### A function to find optimal cutpoints based on BMI for survival analysis
+
+First use `findcutnum` to decide the optimal number of cutoff points
+based on AIC values.
+
+```{r findcutnum_1, warning=FALSE, message=FALSE}
+findcutnum(
+  # continuous risk factor which needs the optimal number of cutoffs
+  factor = dat1$BMI,
+  # (event, time),
+  # event(1:event occurs;0:right censoring),
+  # time(minimum of event time and right censoring time),so outcome dimension is N by 2
+  outcome = cbind(dat1$event, dat1$OS),
+  # the number of cutoffs
+  cutnum=NA,
+  # Data type for analysis
+  datatype = "survival",
+  # the minimum number of each group and the default is 20
+  nmin = 8,
+  # the total number of pieces and the default is 100
+  segment = 100)
+```
+
+In the dataset containing only 30 entries, the minimum number of each
+segment is set to 8 (nmin=8), while the default number of segments is
+maintained at 100 (segment=100). The goal is to find the optimal number
+of cutoff points for BMI in relation to the event of death. Thus, BMI is
+the variable factor, and the outcome is a 30 x 2 matrix generated with
+the `cbind` function.
+
+The AIC values are as follows: 50.52894 for no cutoff point, 49.20829
+for one cutoff, and 51.10694 for two. Given the small size of the
+sample, it isn't realistic to make 3 or more cutoff points, and the AIC
+values for 3 and 4 cutoffs are both infinite.
+
+The smallest AIC value is 49.20829, suggesting that one cutoff point
+would be optimal for dividing these patients into low and high-risk
+groups for death, assuming there are no clinical or other concerns.
+
+### findcut
+
+#### Function to find optimal cutpoints based on BMI for survival analysis with 2 cutpoints
+
+Than use `findcut` to find the optimal location for the above BMI data.
+
+```{r findcut_1, warning=FALSE, message=FALSE}
+findcut(
+    factor = dat1$BMI,                   # Predictor variable
+    outcome = cbind(dat1$event, dat1$OS), # Survival outcome data
+    cutnum = 2,                         # Number of cutpoints
+    datatype = "survival",              # Data type for analysis
+    nmin = 8,                           # Minimum group size
+    segment = 100)                      # Number of segments
+
+```
+
++---------------+-------------------------------------------------+
+| Column        | Explaination                                    |
++===============+=================================================+
+| allcut        | (only the first five results are shown here)    |
++---------------+-------------------------------------------------+
+| Cut1 & Cut2   | locations of the two cutoff points              |
++---------------+-------------------------------------------------+
+| Log.rank.test | when the cutoff points were placed at           |
+|               | (Cut1,Cut2), log-rank test was used to test the |
+|               | significance of the points, i.e., p-value of    |
+|               | the log-rank test.                              |
++---------------+-------------------------------------------------+
+| Likelihood.   | when the cutoff points were placed at           |
+| ratio.test    | (Cut1,Cut2), likelihood ratio test was used to  |
+|               | test the significance of the points, i.e.,      |
+|               | p-value of the likelihood ratio test (log       |
+|               | test).                                          |
++---------------+-------------------------------------------------+
+
+In this dataset of 30 entries, the number of each segment is set to 8
+(nmin=8), while the number of segments remains at the default value of
+100 (segment=100). The goal is to find the optimal locations of cutoff
+points for BMI in response to event death. Therefore, BMI is the
+variable factor, and the outcome is a 30 x 2 matrix generated with the
+`cbind` function. For illustrative purposes, it was arbitrarily decided
+to create 3 groups of BMI, or 2 cutoff points.
+
+The best locations of the cutoff points are determined by two methods:
+
+-   `logranktest`: This method tests all possible cutoffs using the log
+    rank test. The cutoff that yields the minimal p-value is considered
+    the best location.
+
+-   `logtest_likelihood.ratio.test`: This method tests all possible
+    cutoffs using the likelihood ratio test. The cutoff that yields the
+    minimal p-value is considered the best location.
+
+## Dichotomised data
+
+#### Function to find optimal cutpoints based on the invasion for logistic regression analysis with 2 cutpoints
+
+Here, the function `findcutnum` is utilised to determine the optimal
+number of cutoff points based on AIC values.
+
+```{r findcutnum_2, warning=FALSE, message=FALSE}
+findcutnum(
+  factor = dat1$invasion,  # Predictor variable (invasion)
+  outcome = dat1$LVSI,     # Outcome variable (LVSI)
+  datatype = "logistic",   # Data type for logistic regression
+  nmin = 8,                # Minimum group size
+  segment = 100)           # Number of segments
+```
+
+In this dataset, which contains only 30 entries, the number of each
+segment is set to 8 (nmin=8), while the number of segments remains at
+the default value of 100 (segment=100). The aim is to find the optimal
+locations of cutoff points for invasion in response to the presence of
+LVSI. Therefore, invasion is the variable factor, and LVSI is the
+outcome. As illustrated above, the number of cutoff points needed in
+this case is 2.
+
+Now, the function `findcut` will be used to determine the optimal
+locations of the two cutoff points.
+
+```{r findcut_2, warning=FALSE, message=FALSE}
+findcut(
+  factor = dat1$invasion,   # Predictor variable (invasion)
+  outcome = dat1$LVSI,      # Outcome variable (LVSI)
+  cutnum = 2,              # Number of cutpoints
+  datatype = "logistic",   # Data type for logistic regression
+  nmin = 8,                # Minimum group size
+  segment = 100            # Number of segments
+)
+```
+
+In this dataset of 30 entries, the number of each segment is set to 8
+(nmin=8), while the number of segments remains at the default value of
+100 (segment=100). The goal is to find the optimal locations of cutoff
+points for invasion in response to the presence of LVSI. Invasion is the
+variable factor, and LVSI is the outcome. The required number of cutoff
+points in this case is 2.
+
+The best locations of the cutoff points are determined by two methods:
+
+-   **`logtest_likelihood.ratio.test`**: This method tests all possible
+    cutoffs using the likelihood ratio test. The cutoff that yields the
+    minimal p-value is considered the best location.
+
+-   **`AUC`**: This method tests all possible cutoffs using the AUC
+    method. The cutoff that yields the maximal AUC is considered the
+    best location.
+
+```{r sessionInfo, warning=FALSE, message=FALSE}
+sessionInfo()
+```
