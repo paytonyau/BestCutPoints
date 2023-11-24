@@ -328,5 +328,8 @@ I
 The [original publication](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0176231), along with its associated scripts (https://osf.io/ef7na/ and http://www.math.nsysu.edu.tw/~cchang/) , were obtained through the Attribution 4.0 International (CC BY 4.0) license. The authors  have provided a step-by-step [user manual (in pdf)](https://github.com/paytonyau/BestSurvivalCuts/blob/main/Tuturial/User_Manual_Fundcut.pdf) to assist users in using the script for `findcutnum` and  `findcut`.  
 The example to run for `findnumCox` and  `findcutCox` can be found in [the tutorial](https://github.com/paytonyau/BestSurvivalCuts/blob/main/Tuturial/).
 
+
+"BioTranslate: Turning Bioscience Publications into Packages" is a mini project dedicated to bridging the gap between publised models to packages in the field of biosciences.
+
 ## References
 Chang, C., Hsieh, M. K., Chang, W. Y., Chiang, A. J., & Chen, J. (2017). Determining the optimal number and location of cutoff points with application to data of cervical cancer. PloS one, 12(4), e0176231.
